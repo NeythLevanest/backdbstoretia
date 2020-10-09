@@ -47,15 +47,15 @@ class Usuario(AbstractBaseUser):
 
 
 class Tiendas(models.Model):
-    store = models.IntegerField(default=None)
+    store = models.IntegerField(primary_key=True,default=None)
     type = models.CharField(max_length=1,default=None)
-    size = models.IntegerField(default=None)
+    size = models.DecimalField(max_digits=10, decimal_places=2, default=None)
 
     def __str__(self):
-        return str(self.id)
+        return str(self.store)
 
 class Caracteristicas(models.Model):
-    store = models.IntegerField(default=None)
+    store = models.ForeignKey(Tiendas, on_delete=models.SET_NULL, blank=True, null=True)
     date = models.DateField()
     temperature = models.DecimalField(max_digits=6, decimal_places=2, default=None)
     fuel_price = models.DecimalField(max_digits=8, decimal_places=3, default=None)
@@ -69,14 +69,14 @@ class Caracteristicas(models.Model):
     isholiday = models.BooleanField(default=False)
 
     def __str__(self):
-        return str(self.id)
+        return str(self.store_id)
 
 class Ventas(models.Model):
-    store = models.IntegerField(default=None)
+    store = models.ForeignKey(Tiendas, on_delete=models.SET_NULL, blank=True, null=True)
     departamento = models.IntegerField(default=None)
     date = models.DateField()
     weekly_sales = models.DecimalField(max_digits=8, decimal_places=2, default=None)
     isholiday = models.BooleanField(default=False)
 
     def __str__(self):
-        return str(self.id)
+        return str(self.store_id)

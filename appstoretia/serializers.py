@@ -21,4 +21,4 @@ class CaracteristicasSerializer (serializers.ModelSerializer):
 class VentasSerializer (serializers.ModelSerializer):
     class Meta:
         model = Ventas
-        fields = []
+        fields = '__all__'
