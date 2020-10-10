@@ -50,22 +50,22 @@ class Tiendas(models.Model):
     store = models.IntegerField(primary_key=True,default=None)
     type = models.CharField(max_length=1,default=None)
     size = models.DecimalField(max_digits=10, decimal_places=2, default=None)
-
+    
     def __str__(self):
         return str(self.store)
 
 class Caracteristicas(models.Model):
     store = models.ForeignKey(Tiendas, on_delete=models.SET_NULL, blank=True, null=True)
     date = models.DateField()
-    temperature = models.DecimalField(max_digits=6, decimal_places=2, default=None)
-    fuel_price = models.DecimalField(max_digits=8, decimal_places=3, default=None)
-    markdown1 = models.DecimalField(max_digits=10, decimal_places=2, default=None)
-    markdown2 = models.DecimalField(max_digits=10, decimal_places=2, default=None)
-    markdown3 = models.DecimalField(max_digits=10, decimal_places=2, default=None)
-    markdown4 = models.DecimalField(max_digits=10, decimal_places=2, default=None)
-    markdown5 = models.DecimalField(max_digits=10, decimal_places=2, default=None)
-    cpi = models.DecimalField(max_digits=16, decimal_places=2, default=None)
-    unemployme = models.DecimalField(max_digits=10, decimal_places=2, default=None)
+    temperature = models.DecimalField(max_digits=6, decimal_places=2, default=None,blank=True, null=True)
+    fuel_price = models.DecimalField(max_digits=8, decimal_places=3, default=None,blank=True, null=True)
+    markdown1 = models.DecimalField(max_digits=10, decimal_places=2, default=None,blank=True, null=True)
+    markdown2 = models.DecimalField(max_digits=10, decimal_places=2, default=None,blank=True, null=True)
+    markdown3 = models.DecimalField(max_digits=10, decimal_places=2, default=None,blank=True, null=True)
+    markdown4 = models.DecimalField(max_digits=10, decimal_places=2, default=None,blank=True, null=True)
+    markdown5 = models.DecimalField(max_digits=10, decimal_places=2, default=None,blank=True, null=True)
+    cpi = models.DecimalField(max_digits=16, decimal_places=2, default=None,blank=True, null=True)
+    unemployme = models.DecimalField(max_digits=10, decimal_places=2, default=None,blank=True, null=True)
     isholiday = models.BooleanField(default=False)
 
     def __str__(self):
