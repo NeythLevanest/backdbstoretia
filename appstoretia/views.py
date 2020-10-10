@@ -8,8 +8,8 @@ from rest_framework.response import Response
 from appstoretia.models import *
 from appstoretia.serializers import *
 
-from django.db.models import Sum
-from django.db.models import Avg, Max, Min
+from django.db.models import Sum, Avg
+from django.db.models import Max, Min
 #Data Libraries
 
 import pandas as pd
@@ -70,16 +70,77 @@ class Correlacion_Ventas(APIView):
         
        
         #return Response(ventas_tiendas, status=status.HTTP_201_CREATED)
+class Total_Ventas(APIView):
+    def get(self, request,format=None):
+        ventas_tienda = ''
+       
+     
+        ventas_tienda = Ventas.objects.values('store').annotate(sumsales = Sum('weekly_sales'), max=Max('weekly_sales'), min=Min('weekly_sales'))
+        caracteristicas = Tiendas.objects.values("size", "type")
+        
+        respuesta = {"tienda":ventas_tienda,"caracteristicas":caracteristicas}
+        
+        return Response(respuesta, status=status.HTTP_201_CREATED)
+    def post(self, request, format=None):
+        ventas_tienda = ''
+        
+        date_init = str(request.data["date_init"])
+        date_end = str(request.data["date_end"])
+        feriado = request.data["feriado"]
+
+        fecha_min = Ventas.objects.values('date').order_by('date').first()
+        print("min", fecha_min)
+        fecha_max = Ventas.objects.values('date').order_by('date').last()
+        print("max", fecha_max)
+
+        if(feriado == ""):
+
+            if(date_init == "" and date_end != ""):
+                ventas_tienda = Ventas.objects.filter(date__range=[fecha_min,date_end]).values('store').annotate(sumsales = Sum('weekly_sales'), max=Max('weekly_sales'), min=Min('weekly_sales'))
+            
+            elif(date_init != "" and date_end == ""):
+                ventas_tienda = Ventas.objects.filter(date__range=[date_init,date.today()]).values('store').annotate(sumsales = Sum('weekly_sales'), max=Max('weekly_sales'), min=Min('weekly_sales'))
+            
+            elif(date_init == "" and date_end == ""):  
+                ventas_tienda = Ventas.objects.values('store').annotate(sumsales = Sum('weekly_sales'), max=Max('weekly_sales'), min=Min('weekly_sales'))
+            
+            elif(date_init != "" and date_end != ""): 
+                ventas_tienda = Ventas.objects.filter(date__range=[date_init,date_end]).values('store').annotate(sumsales = Sum('weekly_sales'), max=Max('weekly_sales'), min=Min('weekly_sales'))
+
+        else:
+            if(feriado=="true"):
+                feriado = True
+            else:
+                feriado = False
+            if(date_init == "" and date_end != ""):
+                ventas_tienda = Ventas.objects.filter(date__range=[fecha_min,date_end]).filter(isholiday=feriado).values('store').annotate(sumsales = Sum('weekly_sales'), max=Max('weekly_sales'), min=Min('weekly_sales'))
+            
+            elif(date_init != "" and date_end == ""):
+                ventas_tienda = Ventas.objects.filter(date__range=[date_init,date.today()]).filter(isholiday=feriado).values('store').annotate(sumsales = Sum('weekly_sales'), max=Max('weekly_sales'), min=Min('weekly_sales'))
+            
+            elif(date_init == "" and date_end == ""):  
+                ventas_tienda = Ventas.objects.values('store').filter(isholiday=feriado).annotate(sumsales = Sum('weekly_sales'), max=Max('weekly_sales'), min=Min('weekly_sales'))
+            
+            elif(date_init != "" and date_end != ""): 
+                ventas_tienda = Ventas.objects.filter(date__range=[date_init,date_end]).filter(isholiday=feriado).values('store').annotate(sumsales = Sum('weekly_sales'), max=Max('weekly_sales'), min=Min('weekly_sales'))
+
+
+        caracteristicas = Tiendas.objects.values("size", "type")
+        
+        respuesta = {"tienda":ventas_tienda,"caracteristicas":caracteristicas}
+        
+        return Response(respuesta, status=status.HTTP_201_CREATED)
 class Promedio_Ventas(APIView):
     def post(self, request, format=None):
         caracteristicas = ''
         ventas_departamento = ''
         ventas_tienda = ''
-        avg_unemployme =''
+        sum_unemployme =''
         
         num_tienda = request.data["store"]
         date_init = str(request.data["date_init"])
         date_end = str(request.data["date_end"])
+        feriado = request.data["feriado"]
         valor = num_tienda
      
         print("fechainit", date_init)
@@ -89,32 +150,55 @@ class Promedio_Ventas(APIView):
         fecha_max = Ventas.objects.values('date').order_by('date').last()
         print("max", fecha_max)
 
-        if(date_init == "" and date_end != ""):
-            #if(date_end > fecha_max):
-            #    date_end = fecha_max
-            ventas_departamento = Ventas.objects.filter(store_id=valor).filter(date__range=[fecha_min,date_end]).values('departamento').annotate(avgsales = Avg('weekly_sales'))
-            ventas_tienda = Ventas.objects.filter(store_id=valor).filter(date__range=[fecha_min,date_end]).values('store').annotate(avgsales = Avg('weekly_sales'), max=Max('weekly_sales'), min=Min('weekly_sales'))
-            avg_unemployme = Caracteristicas.objects.filter(store_id=valor).filter(date__range=[fecha_min,date_end]).values('store').annotate(avgunemploye = Avg('unemployme'), max=Max('unemployme'), min=Min('unemployme'))
-        elif(date_init != "" and date_end == ""):
-            #if(date_init < fecha_min):
-            #    date_init = fecha_min
-            ventas_departamento = Ventas.objects.filter(store_id=valor).filter(date__range=[date_init,date.today()]).values('departamento').annotate(avgsales = Avg('weekly_sales'))
-            ventas_tienda = Ventas.objects.filter(store_id=valor).filter(date__range=[date_init,date.today()]).values('store').annotate(avgsales = Avg('weekly_sales'), max=Max('weekly_sales'), min=Min('weekly_sales'))
-            avg_unemployme = Caracteristicas.objects.filter(store_id=valor).filter(date__range=[date_init,date.today()]).values('store').annotate(avgunemploye = Avg('unemployme'), max=Max('unemployme'), min=Min('unemployme'))
-        elif(date_init == "" and date_end == ""):  
-            caracteristicas = Tiendas.objects.filter(store=valor).values("size", "type")
-            ventas_departamento = Ventas.objects.filter(store_id=valor).values('departamento').annotate(avgsales = Avg('weekly_sales'))
-            ventas_tienda = Ventas.objects.filter(store_id=valor).values('store').annotate(avgsales = Avg('weekly_sales'), max=Max('weekly_sales'), min=Min('weekly_sales'))
-            avg_unemployme = Caracteristicas.objects.filter(store_id=valor).values('store').annotate(avgunemploye = Avg('unemployme'), max=Max('unemployme'), min=Min('unemployme'))
-        elif(date_init != "" and date_end != ""): 
-            ventas_departamento = Ventas.objects.filter(store_id=valor).filter(date__range=[date_init,date_end]).values('departamento').annotate(avgsales = Avg('weekly_sales'))
-            ventas_tienda = Ventas.objects.filter(store_id=valor).filter(date__range=[date_init,date_end]).values('store').annotate(avgsales = Avg('weekly_sales'), max=Max('weekly_sales'), min=Min('weekly_sales'))
-            avg_unemployme = Caracteristicas.objects.filter(store_id=valor).filter(date__range=[date_init,date_end]).values('store').annotate(avgunemploye = Avg('unemployme'), max=Max('unemployme'), min=Min('unemployme'))
-            
         caracteristicas = Tiendas.objects.filter(store=valor).values("size", "type")
-        avg_unemployme = Caracteristicas.objects.filter(store_id=valor).values('store').annotate(avgunemploye = Avg('unemployme'), max=Max('unemployme'), min=Min('unemployme'))
+
+        if(feriado == ""):
+            if(date_init == "" and date_end != "" ):
+                ventas_departamento = Ventas.objects.filter(store_id=valor).filter(date__range=[fecha_min,date_end]).values('departamento').annotate(avgsales = Avg('weekly_sales'))
+                ventas_tienda = Ventas.objects.filter(store_id=valor).filter(date__range=[fecha_min,date_end]).values('store').annotate(avgsales = Avg('weekly_sales'), max=Max('weekly_sales'), min=Min('weekly_sales'))
+                sum_unemployme = Caracteristicas.objects.filter(store_id=valor).filter(date__range=[fecha_min,date_end]).values('store').annotate(sumunemploye = Avg('unemployme'), max=Max('unemployme'), min=Min('unemployme'))
+            
+            elif(date_init != "" and date_end == ""):
+                ventas_departamento = Ventas.objects.filter(store_id=valor).filter(date__range=[date_init,date.today()]).values('departamento').annotate(avgsales = Avg('weekly_sales'))
+                ventas_tienda = Ventas.objects.filter(store_id=valor).filter(date__range=[date_init,date.today()]).values('store').annotate(avgsales = Avg('weekly_sales'), max=Max('weekly_sales'), min=Min('weekly_sales'))
+                sum_unemployme = Caracteristicas.objects.filter(store_id=valor).filter(date__range=[date_init,date.today()]).values('store').annotate(avgunemploye = Avg('unemployme'), max=Max('unemployme'), min=Min('unemployme'))
+            
+            elif(date_init == "" and date_end == ""):  
+                ventas_departamento = Ventas.objects.filter(store_id=valor).values('departamento').annotate(avgsales = Avg('weekly_sales'))
+                ventas_tienda = Ventas.objects.filter(store_id=valor).values('store').annotate(avgsales = Avg('weekly_sales'), max=Max('weekly_sales'), min=Min('weekly_sales'))
+                sum_unemployme = Caracteristicas.objects.filter(store_id=valor).values('store').annotate(avgunemploye = Avg('unemployme'), max=Max('unemployme'), min=Min('unemployme'))
+            
+            elif(date_init != "" and date_end != ""): 
+                ventas_departamento = Ventas.objects.filter(store_id=valor).filter(date__range=[date_init,date_end]).values('departamento').annotate(avgsales = Avg('weekly_sales'))
+                ventas_tienda = Ventas.objects.filter(store_id=valor).filter(date__range=[date_init,date_end]).values('store').annotate(avgsales = Avg('weekly_sales'), max=Max('weekly_sales'), min=Min('weekly_sales'))
+                sum_unemployme = Caracteristicas.objects.filter(store_id=valor).filter(date__range=[date_init,date_end]).values('store').annotate(avgunemploye = Avg('unemployme'), max=Max('unemployme'), min=Min('unemployme'))
+       
+        else:
+            if(feriado=="true"):
+                feriado = True
+            else:
+                feriado = False
+            if(date_init == "" and date_end != "" ):
+                ventas_departamento = Ventas.objects.filter(store_id=valor).filter(date__range=[fecha_min,date_end]).filter(isholiday=feriado).values('departamento').annotate(avgsales = Avg('weekly_sales'))
+                ventas_tienda = Ventas.objects.filter(store_id=valor).filter(date__range=[fecha_min,date_end]).filter(isholiday=feriado).values('store').annotate(avgsales = Avg('weekly_sales'), max=Max('weekly_sales'), min=Min('weekly_sales'))
+                sum_unemployme = Caracteristicas.objects.filter(store_id=valor).filter(date__range=[fecha_min,date_end]).values('store').annotate(sumunemploye = Avg('unemployme'), max=Max('unemployme'), min=Min('unemployme'))
+            
+            elif(date_init != "" and date_end == ""):
+                ventas_departamento = Ventas.objects.filter(store_id=valor).filter(date__range=[date_init,date.today()]).filter(isholiday=feriado).values('departamento').annotate(avgsales = Avg('weekly_sales'))
+                ventas_tienda = Ventas.objects.filter(store_id=valor).filter(date__range=[date_init,date.today()]).filter(isholiday=feriado).values('store').annotate(avgsales = Avg('weekly_sales'), max=Max('weekly_sales'), min=Min('weekly_sales'))
+                sum_unemployme = Caracteristicas.objects.filter(store_id=valor).filter(date__range=[date_init,date.today()]).values('store').annotate(avgunemploye = Avg('unemployme'), max=Max('unemployme'), min=Min('unemployme'))
+            
+            elif(date_init == "" and date_end == ""):  
+                ventas_departamento = Ventas.objects.filter(store_id=valor).filter(isholiday=feriado).values('departamento').annotate(avgsales = Avg('weekly_sales'))
+                ventas_tienda = Ventas.objects.filter(store_id=valor).filter(isholiday=feriado).values('store').annotate(avgsales = Avg('weekly_sales'), max=Max('weekly_sales'), min=Min('weekly_sales'))
+                sum_unemployme = Caracteristicas.objects.filter(store_id=valor).values('store').annotate(avgunemploye = Avg('unemployme'), max=Max('unemployme'), min=Min('unemployme'))
+            
+            elif(date_init != "" and date_end != ""): 
+                ventas_departamento = Ventas.objects.filter(store_id=valor).filter(date__range=[date_init,date_end]).filter(isholiday=feriado).values('departamento').annotate(avgsales = Avg('weekly_sales'))
+                ventas_tienda = Ventas.objects.filter(store_id=valor).filter(date__range=[date_init,date_end]).filter(isholiday=feriado).values('store').annotate(avgsales = Avg('weekly_sales'), max=Max('weekly_sales'), min=Min('weekly_sales'))
+                sum_unemployme = Caracteristicas.objects.filter(store_id=valor).filter(date__range=[date_init,date_end]).values('store').annotate(avgunemploye = Avg('unemployme'), max=Max('unemployme'), min=Min('unemployme'))                
         
-        respuesta = {"tienda":ventas_tienda,"caracteristicas":caracteristicas,"desempleo":avg_unemployme,"p_departamentos":ventas_departamento}
+        respuesta = {"tienda":ventas_tienda,"caracteristicas":caracteristicas,"desempleo":sum_unemployme,"p_departamentos":ventas_departamento}
         
         return Response(respuesta, status=status.HTTP_201_CREATED)
 

@@ -22,6 +22,7 @@ urlpatterns = [
     path('', include(router.urls)),
     path('correlacion_ventas/', views.Correlacion_Ventas.as_view(), name='api_correlacion_ventas'),
     path('promedio_ventas_tienda/', views.Promedio_Ventas.as_view(), name='api_promedio_ventas'),
+     path('total_ventas_tiendas/', views.Total_Ventas.as_view(), name='api_total_ventas'),
     path('promedio_global_ventas_tienda/', views.Promedio_Global_Ventas.as_view(), name='api_promediog_ventas'),
 
 ]
