@@ -249,3 +249,54 @@ class Promedio_Global_Ventas(APIView):
         ventas_tienda = Ventas.objects.filter(store_id=valor).values('store_id').annotate(avgsales = Avg('weekly_sales'))
         respuesta = {"tienda":ventas_tienda}
         return Response(respuesta, status=status.HTTP_201_CREATED)
+
+class Historial_Ventas(APIView):
+    def post(self, request, format=None):
+        ventas_tienda = ''
+        num_tienda = request.data["store"]
+        date_init = str(request.data["date_init"])
+        date_end = str(request.data["date_end"])
+        feriado = request.data["feriado"]
+        valor = num_tienda
+        print("Valor:", valor)
+
+        fecha_min = Ventas.objects.values('date').order_by('date').first()
+        print("min", fecha_min)
+        fecha_max = Ventas.objects.values('date').order_by('date').last()
+        print("max", fecha_max)
+
+        ventas_tienda = Ventas.objects.filter(store_id=valor).order_by('date').values('date','weekly_sales')
+
+
+        if(feriado == ""):
+            if(date_init == "" and date_end != "" ):
+                ventas_tienda = Ventas.objects.filter(store_id=valor).filter(date__range=[fecha_min,date_end]).order_by('date').values('date','weekly_sales')
+                
+            elif(date_init != "" and date_end == ""):
+                ventas_tienda = Ventas.objects.filter(store_id=valor).filter(date__range=[date_init,date.today()]).order_by('date').values('date','weekly_sales')
+                
+            elif(date_init == "" and date_end == ""):  
+                ventas_tienda = Ventas.objects.filter(store_id=valor).order_by('date').values('date','weekly_sales')
+                
+            elif(date_init != "" and date_end != ""): 
+                ventas_tienda = Ventas.objects.filter(store_id=valor).filter(date__range=[date_init,date_end]).order_by('date').values('date','weekly_sales')
+                
+        else:
+            if(feriado=="true"):
+                feriado = True
+            else:
+                feriado = False
+            if(date_init == "" and date_end != "" ):
+                ventas_tienda = Ventas.objects.filter(store_id=valor).filter(date__range=[fecha_min,date_end]).filter(isholiday=feriado).order_by('date').values('date','weekly_sales')
+                
+            elif(date_init != "" and date_end == ""):
+                ventas_tienda = Ventas.objects.filter(store_id=valor).filter(date__range=[date_init,date.today()]).filter(isholiday=feriado).order_by('date').values('date','weekly_sales')
+                
+            elif(date_init == "" and date_end == ""):  
+                ventas_tienda = Ventas.objects.filter(store_id=valor).filter(isholiday=feriado).order_by('date').values('date','weekly_sales')
+                
+            elif(date_init != "" and date_end != ""): 
+                ventas_tienda = Ventas.objects.filter(store_id=valor).filter(date__range=[date_init,date_end]).filter(isholiday=feriado).order_by('date').values('date','weekly_sales')
+                
+        respuesta = {"name":"Tienda N~"+str(valor),"series":ventas_tienda}
+        return Response(respuesta, status=status.HTTP_201_CREATED)
