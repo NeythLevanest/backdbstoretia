@@ -13,7 +13,7 @@ from appstoretia.urls import router
 from dbstoretia import settings
 
 
-from rest_framework_jwt.views import obtain_jwt_token, refresh_jwt_token
+#from rest_framework_jwt.views import obtain_jwt_token, refresh_jwt_token
 
 
 urlpatterns = [
