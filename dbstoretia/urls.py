@@ -28,3 +28,6 @@ urlpatterns = [
     path('historial_ventas/', views.Historial_Ventas.as_view(), name='api_historial_ventas'),
 
 ]
+if settings.DEBUG:
+  urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
