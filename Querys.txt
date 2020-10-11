@@ -1,0 +1,5 @@
+COPY PUBLIC.appstoretia_tiendas (store, type, size) FROM 'C:\Users\neyth\Escritorio\ProyectoTIA\tiendas.csv' DELIMITER ',' CSV HEADER;
+
+COPY PUBLIC.appstoretia_caracteristicas (store_id, date, temperature, fuel_price, markdown1, markdown2, markdown3, markdown4, markdown5, cpi, unemployme, isholiday) FROM 'C:\Users\neyth\Escritorio\ProyectoTIA\caracteristicas.csv' DELIMITER ',' CSV HEADER;
+
+COPY PUBLIC.appstoretia_ventas (store_id, departamento, date, weekly_sales, isholiday) FROM 'C:\Users\neyth\Escritorio\ProyectoTIA\ventas.csv' DELIMITER ',' CSV HEADER;
