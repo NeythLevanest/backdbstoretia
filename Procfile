@@ -1,7 +1,7 @@
-import cmbackend
+import dbstoretia
 
 release: python manage.py makemigrations --no-input
 release: python manage.py migrate --no-input
 
 
-web: gunicorn cmbackend.wsgi --log-file -
+web: gunicorn dbstoretia.wsgi --log-file -
