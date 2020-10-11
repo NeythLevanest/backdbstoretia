@@ -29,11 +29,11 @@ It is composed of historical sales data for 45 stores located in different regio
 
 ## Database Config
 
-CREAR BASE DE DATOS EN POSTGRESTSQL
+#### CREAR BASE DE DATOS EN POSTGRESQL
 
 To create the local database you must install Postgres 12.1-3, with the pgAdmin editor create the database "dbstoretia" (suggested name). Then in the dbstoretia / settings.py file
 You need to configure the connection to the database according to the local specifications of your computer:
-
+```
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -44,10 +44,20 @@ DATABASES = {
         'PORT': '',
     }
 }
-
-You can then connect the database to the application using the `python manage.py makemigrations` and` python manage.py migrate` commands.
+```
+You can then connect the database to the application using the `python manage.py makemigrations` and ` python manage.py migrate` commands.
 - May or may not create a user using `python manage.py createsuperuser`
 
+#### CARGAR DATOS A LA BASE DE DATOS
+
+To upload the information to the database you must use the querys provided in the file `Querys.txt`
+- Open pgAdmin, right click on the database and select `query tools.
+- Once in the editor copy the content of `Querys.txt` and configure the address of the directory and the file for each of the documents as follows:
+```
+COPY PUBLIC.tabla (campos) FROM 'path of file' DELIMITER ',' CSV HEADER;
+### Por ejemplo
+COPY PUBLIC.appstoretia_tiendas (store, type, size) FROM 'C:\Users\neyth\Escritorio\ProyectoTIA\tiendas.csv' DELIMITER ',' CSV HEADER;
+```
 
 ## Development server
 
