@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 from pathlib import Path
 import os
 import dj_database_url
-import django_heroku
+
 from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -28,9 +28,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'mlg=lo^nbnnew3ic#7hupd)$_qs@wh_-*kxk0e&lzc57$k4gp3'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 MEDIA_URL = '/media/'
@@ -86,15 +86,14 @@ WSGI_APPLICATION = 'dbstoretia.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'dbstoretia',
-        'USER': 'postgres',
-        'PASSWORD': 'Rnlv0609',
-        'HOST': 'localhost',
-        'PORT': '',
+        'NAME': 'postgres',
+        'USER': 'distribuidos',
+        'PASSWORD': 'distribuidos',
+        'HOST': 'distribuidos.crjnbxdyxzyl.us-east-1.rds.amazonaws.com',
+        'PORT': '5432',
     }
 }
 db_from_env = dj_database_url.config(conn_max_age=500)
@@ -142,7 +141,7 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-django_heroku.settings(locals())
+
 
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ORIGIN_WHITELIST = ['http://localhost:8000']

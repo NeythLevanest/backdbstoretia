@@ -1,0 +1,31 @@
+                           List of relations
+ Schema |                Name                |   Type   |    Owner     
+--------+------------------------------------+----------+--------------
+ public | appstoretia_caracteristicas        | table    | distribuidos
+ public | appstoretia_caracteristicas_id_seq | sequence | distribuidos
+ public | appstoretia_tiendas                | table    | distribuidos
+ public | appstoretia_usuario                | table    | distribuidos
+ public | appstoretia_usuario_id_seq         | sequence | distribuidos
+ public | appstoretia_ventas                 | table    | distribuidos
+ public | appstoretia_ventas_id_seq          | sequence | distribuidos
+ public | auth_group                         | table    | distribuidos
+ public | auth_group_id_seq                  | sequence | distribuidos
+ public | auth_group_permissions             | table    | distribuidos
+ public | auth_group_permissions_id_seq      | sequence | distribuidos
+ public | auth_permission                    | table    | distribuidos
+ public | auth_permission_id_seq             | sequence | distribuidos
+ public | auth_user                          | table    | distribuidos
+ public | auth_user_groups                   | table    | distribuidos
+ public | auth_user_groups_id_seq            | sequence | distribuidos
+ public | auth_user_id_seq                   | sequence | distribuidos
+ public | auth_user_user_permissions         | table    | distribuidos
+ public | auth_user_user_permissions_id_seq  | sequence | distribuidos
+ public | django_admin_log                   | table    | distribuidos
+ public | django_admin_log_id_seq            | sequence | distribuidos
+ public | django_content_type                | table    | distribuidos
+ public | django_content_type_id_seq         | sequence | distribuidos
+ public | django_migrations                  | table    | distribuidos
+ public | django_migrations_id_seq           | sequence | distribuidos
+ public | django_session                     | table    | distribuidos
+(26 rows)
+
