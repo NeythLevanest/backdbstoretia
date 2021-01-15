@@ -1,3 +1,5 @@
+Django>=3.0,<4.0
+psycopg2-binary>=2.8
 argon2-cffi==20.1.0
 asgiref==3.2.7
 astroid==2.3.3
@@ -91,3 +93,4 @@ webencodings==0.5.1
 whitenoise==5.2.0
 widgetsnbextension==3.5.1
 wrapt==1.11.2
+

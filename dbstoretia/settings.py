@@ -92,7 +92,7 @@ DATABASES = {
         'NAME': 'postgres',
         'USER': 'distribuidos',
         'PASSWORD': 'distribuidos',
-        'HOST': 'distribuidos.crjnbxdyxzyl.us-east-1.rds.amazonaws.com',
+        'HOST': 'replica1.crjnbxdyxzyl.us-east-1.rds.amazonaws.com',
         'PORT': '5432',
     }
 }
